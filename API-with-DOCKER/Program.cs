@@ -16,8 +16,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
-
+builder.Services.AddHealthChecks();
 var app = builder.Build();
+app.MapHealthChecks("/health");
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+
+    var db = scope.ServiceProvider
+        .GetRequiredService<AppDbContext>();
+
+    await db.Database.MigrateAsync();
+}
 
 // HTTP Pipeline
 if (app.Environment.IsDevelopment())
