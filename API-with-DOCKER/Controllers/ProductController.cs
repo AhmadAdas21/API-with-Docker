@@ -12,9 +12,12 @@ namespace API_with_DOCKER.Controllers
     public class ProductController : ControllerBase
     {
 
-        ProductInterface _productService;
+        private readonly ProductInterface _productService;
 
-       
+        public ProductController(ProductInterface productService)
+        {
+            _productService = productService;
+        }
         [HttpGet]
         public async Task<IActionResult> GetProducts()
         {
@@ -27,7 +30,7 @@ namespace API_with_DOCKER.Controllers
         {
             var product = await _productService.CreateProductAsync(dto);
 
-            return StatusCode(StatusCodes.Status201Created, product);
+            return StatusCode(201, product);
         }
     }
 }

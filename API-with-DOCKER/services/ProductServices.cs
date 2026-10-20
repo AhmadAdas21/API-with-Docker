@@ -8,7 +8,13 @@ namespace API_with_DOCKER.services
 {
     public class ProductServices:ProductInterface
     {
-        AppDbContext AppDbContext;
+
+        private readonly AppDbContext AppDbContext;
+
+        public ProductServices(AppDbContext context)
+        {
+            AppDbContext = context;
+        }
 
         public async Task<List<Product>> GetAllProductsAsync()
         {
