@@ -1,5 +1,7 @@
 ﻿using API_with_DOCKER.DataBase;
 using API_with_DOCKER.dtos;
+using API_with_DOCKER.interfaces;
+using API_with_DOCKER.models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,29 +12,22 @@ namespace API_with_DOCKER.Controllers
     public class ProductController : ControllerBase
     {
 
-        private readonly AppDbContext _context;
+        ProductInterface _productService;
 
-        public ProductController(AppDbContext context)
-        {
-            _context = context;
-        }
+       
         [HttpGet]
         public async Task<IActionResult> GetProducts()
         {
-            var products = await _context.Products.AsNoTracking().ToListAsync();
+            var Products = await _productService.GetAllProductsAsync();
+            return StatusCode(StatusCodes.Status200OK, Products);
 
-            return Ok(products);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromBody] AddProduct product)
+        public async Task<IActionResult> CreateProduct([FromBody] AddProduct dto)
         {
-            if (product == null)
-            {
-                return BadRequest();
-            }
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetProducts), new { id = product.id }, product);
+            var product = await _productService.CreateProductAsync(dto);
+
+            return StatusCode(StatusCodes.Status201Created, product);
         }
     }
 }

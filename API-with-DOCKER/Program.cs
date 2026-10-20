@@ -1,4 +1,6 @@
 using API_with_DOCKER.DataBase;
+using API_with_DOCKER.interfaces;
+using API_with_DOCKER.services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,8 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<ProductInterface, ProductServices>();
 
-// Register database BEFORE builder.Build()
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
