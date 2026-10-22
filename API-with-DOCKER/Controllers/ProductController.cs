@@ -1,5 +1,5 @@
 ﻿using API_with_DOCKER.DataBase;
-using API_with_DOCKER.dtos;
+using API_with_DOCKER.dtos.Product;
 using API_with_DOCKER.interfaces;
 using API_with_DOCKER.models;
 using Microsoft.AspNetCore.Mvc;

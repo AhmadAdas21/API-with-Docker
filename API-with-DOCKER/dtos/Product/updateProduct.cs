@@ -1,4 +1,4 @@
-﻿namespace API_with_DOCKER.dtos
+﻿namespace API_with_DOCKER.dtos.Product
 {
     public record updateProduct
     {

@@ -1,4 +1,4 @@
-﻿using API_with_DOCKER.dtos;
+﻿using API_with_DOCKER.dtos.Product;
 using API_with_DOCKER.models;
 
 namespace API_with_DOCKER.interfaces
