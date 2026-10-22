@@ -1,6 +1,9 @@
-﻿namespace API_with_DOCKER.interfaces
+﻿using API_with_DOCKER.models;
+
+namespace API_with_DOCKER.interfaces
 {
-    public class OrderInterface
+    public interface OrderInterface
     {
+        List<Order> GetAll();
     }
 }

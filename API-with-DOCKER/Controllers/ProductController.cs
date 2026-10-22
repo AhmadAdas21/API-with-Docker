@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API_with_DOCKER.Controllers
 {
     [ApiController]
-    [Route("api/controller")]
+    [Route("api/products")]
     public class ProductController : ControllerBase
     {
 
@@ -19,6 +19,7 @@ namespace API_with_DOCKER.Controllers
             _productService = productService;
         }
         [HttpGet]
+        [ProducesResponseType(typeof(List<Product>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProducts()
         {
             var Products = await _productService.GetAllProductsAsync();
@@ -26,11 +27,14 @@ namespace API_with_DOCKER.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromBody] AddProduct dto)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreateProduct([FromBody] AddProduct Request)
         {
-            var product = await _productService.CreateProductAsync(dto);
+            {
+                var product = await _productService.CreateProductAsync(Request);
 
-            return StatusCode(201, product);
+                return StatusCode(201, product);
+            }
         }
     }
 }
