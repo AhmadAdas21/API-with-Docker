@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<ProductInterface, ProductServices>();
+builder.Services.AddScoped<IProduct, ProductServices>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(

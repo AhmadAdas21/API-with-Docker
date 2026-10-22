@@ -3,7 +3,7 @@ using API_with_DOCKER.models;
 
 namespace API_with_DOCKER.dtos.Order
 {
-    public class CreateOrder
+    public record CreateOrder
     {
         [Required]
         List<OrderItem> items;

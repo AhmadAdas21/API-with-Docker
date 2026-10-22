@@ -3,7 +3,7 @@ using API_with_DOCKER.models;
 
 namespace API_with_DOCKER.services
 {
-    public class OrderServices:OrderInterface
+    public class OrderServices:IOrder
     {
         public List<Order> GetAll
         {

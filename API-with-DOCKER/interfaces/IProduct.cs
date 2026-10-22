@@ -3,9 +3,9 @@ using API_with_DOCKER.models;
 
 namespace API_with_DOCKER.interfaces
 {
-    public interface ProductInterface
+    public interface IProduct
     {
         Task<List<Product>> GetAllProductsAsync();
-        Task<Product> CreateProductAsync(AddProduct dto);
+        Task<Product> CreateProductAsync(AddProduct request);
     }
 }

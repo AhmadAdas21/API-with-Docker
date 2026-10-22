@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API_with_DOCKER.services
 {
-    public class ProductServices:ProductInterface
+    public class ProductServices:IProduct
     {
 
         private readonly AppDbContext AppDbContext;

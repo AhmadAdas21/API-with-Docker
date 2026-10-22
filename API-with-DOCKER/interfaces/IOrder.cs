@@ -2,7 +2,7 @@
 
 namespace API_with_DOCKER.interfaces
 {
-    public interface OrderInterface
+    public interface Iorder
     {
         List<Order> GetAll();
     }

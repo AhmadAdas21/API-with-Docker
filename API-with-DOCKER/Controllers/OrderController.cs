@@ -7,8 +7,8 @@ namespace API_with_DOCKER.Controllers
     [ApiController]
     public class OrderController:ControllerBase
     {
-        OrderInterface orderInterface;
-        public OrderController(OrderInterface orderInterface)
+        Iorder orderInterface;
+        public OrderController(Iorder orderInterface)
         {
             this.orderInterface = orderInterface;
         }
