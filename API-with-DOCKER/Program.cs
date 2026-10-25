@@ -10,6 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProductServices, ProductServices>();
+builder.Services.AddScoped<IOrderServices, OrderServices>();
 // Pricing Strategies
 builder.Services.AddScoped<NormalPricingStrategy>();
 builder.Services.AddScoped<VipPricingStrategy>();

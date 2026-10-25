@@ -1,24 +1,22 @@
-﻿using System.Threading;
+﻿
 using API_with_DOCKER.dtos.Order;
 using API_with_DOCKER.interfaces;
 using API_with_DOCKER.models;
-using API_with_DOCKER.services;
-using Azure;
-using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_with_DOCKER.Controllers
 {
     [ApiController]
+    [Route("api/orders")]
     public class OrderController:ControllerBase
     {
-        IOrderServices _orderService;
-        public OrderController(IOrderServices orderInterface)
+        private readonly  IOrderServices _orderService;
+        public OrderController(IOrderServices orderService)
         {
-            this._orderService = orderInterface;
+            _orderService = orderService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAllOrders(CancellationToken cancellationToken)
         {
             var orders = await _orderService.GetAllOrdersAsync(cancellationToken);
 
@@ -31,26 +29,29 @@ namespace API_with_DOCKER.Controllers
 
             return StatusCode( StatusCodes.Status201Created, ToResponse(order));
         }
-        private static object ToResponse(Order order)
-        {
-            return new
-            {
-                order.Id,
-                order.CustomerId,
-                order.PricingType,
-                order.Subtotal,
-                order.TotalCost,
-                order.CreatedAtUtc,
 
-                Items = order.Items.Select(item => new
+        private static OrderResponse ToResponse(Order order)
+        {
+            return new OrderResponse
+            {
+                Id = order.Id,
+                CustomerId = order.CustomerId,
+                PricingType = order.PricingType,
+                Subtotal = order.Subtotal,
+                TotalCost = order.TotalCost,
+                CreatedAtUtc = order.CreatedAtUtc,
+
+                Items = order.Items.Select(item => new OrderItemResponse
                 {
-                    item.ProductId,
-                    item.Quantity,
-                    item.UnitPrice,
-                    item.TotalPrice
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.UnitPrice,
+                    TotalPrice = item.TotalPrice
+
                 }).ToList()
             };
         }
+
 
     }
 }
