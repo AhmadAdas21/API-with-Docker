@@ -1,34 +1,53 @@
+
 using API_with_DOCKER.DataBase;
 using API_with_DOCKER.interfaces;
 using API_with_DOCKER.services;
-using Microsoft.EntityFrameworkCore;
 using API_with_DOCKER.DesignsPatterns.Pricing;
+using API_with_DOCKER.DesignsPatterns.Factory;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Register services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Product and Order Services
 builder.Services.AddScoped<IProductServices, ProductServices>();
 builder.Services.AddScoped<IOrderServices, OrderServices>();
-// Pricing Strategies
+
+// Strategy Pattern
 builder.Services.AddScoped<NormalPricingStrategy>();
 builder.Services.AddScoped<VipPricingStrategy>();
 builder.Services.AddScoped<BlackFridayPricingStrategy>();
 
-// Strategy Resolver
 builder.Services.AddScoped<
     IPricingStrategyResolver,
     PricingStrategyResolver>();
 
+// Factory Pattern
+builder.Services.AddScoped<EmailNotification>();
+builder.Services.AddScoped<SmsNotification>();
+builder.Services.AddScoped<PushNotification>();
+
+builder.Services.AddScoped<
+    INotificationFactory,
+    NotificationFactory>();
+
+// Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
+
 builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
 app.MapHealthChecks("/health");
+
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
