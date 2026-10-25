@@ -2,7 +2,7 @@ using API_with_DOCKER.DataBase;
 using API_with_DOCKER.interfaces;
 using API_with_DOCKER.services;
 using Microsoft.EntityFrameworkCore;
-
+using API_with_DOCKER.DesignsPatterns.Factory;
 var builder = WebApplication.CreateBuilder(args);
 
 // Register services
@@ -10,7 +10,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProduct, ProductServices>();
+builder.Services.AddScoped<EmailNotification>();
+builder.Services.AddScoped<SmsNotification>();
+builder.Services.AddScoped<PushNotification>();
 
+builder.Services.AddScoped<
+    INotificationFactory,
+    NotificationFactory>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")

@@ -7,5 +7,19 @@
         {
             _logger = logger;
         }
+        public Task sendasync(string destination, string message, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (string.IsNullOrWhiteSpace(destination))
+            {
+                throw new ArgumentException("Push notification destination is required.", nameof(destination));
+            }
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                throw new ArgumentException("Notification message is required.", nameof(message));
+            }
+            _logger.LogInformation("Push notification simulated successfully.");
+            return Task.CompletedTask;
+        }
     }
 }
