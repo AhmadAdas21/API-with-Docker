@@ -2,5 +2,6 @@
 {
     public interface IPricingStrategyResolver
     {
+        IPricingStrategy Resolve(string pricingType);
     }
 }
