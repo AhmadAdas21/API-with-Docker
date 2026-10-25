@@ -7,7 +7,7 @@
         {
             _logger = logger;
         }
-        public Task sendasync(string destination, string message, CancellationToken cancellationToken = default)
+        public Task SendAsync(string destination, string message, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (string.IsNullOrWhiteSpace(destination))
