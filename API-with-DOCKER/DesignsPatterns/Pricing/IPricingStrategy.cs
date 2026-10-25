@@ -2,6 +2,6 @@
 {
     public interface IPricingStrategy
     {
-        public void pay(decimal amount);
+        decimal CalculatePrice(decimal originalPrice);
     }
 }
