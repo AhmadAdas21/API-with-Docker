@@ -1,10 +1,22 @@
-﻿namespace API_with_DOCKER.models
+﻿
+namespace API_with_DOCKER.models
 {
     public class OrderItem
     {
-        public int OrderItemId { get; init; }
-        Order Order { get; set; }
-        List<Product> Products { get; init; }
-        private decimal ItemsTotalPrice { get; set; }
+        public int Id { get; set; }
+
+        public int OrderId { get; set; }
+
+        public Order Order { get; set; } = null!;
+
+        public int ProductId { get; set; }
+
+        public Product Product { get; set; } = null!;
+
+        public int Quantity { get; set; }
+
+        public decimal UnitPrice { get; set; }
+
+        public decimal TotalPrice => UnitPrice * Quantity;
     }
 }

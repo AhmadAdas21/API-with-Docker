@@ -12,9 +12,9 @@ namespace API_with_DOCKER.Controllers
     public class ProductController : ControllerBase
     {
 
-        private readonly IProduct _productService;
+        private readonly IProductServices _productService;
 
-        public ProductController(IProduct productService)
+        public ProductController(IProductServices productService)
         {
             _productService = productService;
         }
@@ -23,7 +23,7 @@ namespace API_with_DOCKER.Controllers
         public async Task<IActionResult> GetProducts()
         {
             var Products = await _productService.GetAllProductsAsync();
-            return StatusCode(StatusCodes.Status200OK, Products);
+            return Ok(Products);
 
         }
         [HttpPost]
