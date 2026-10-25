@@ -1,13 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-using API_with_DOCKER.models;
+﻿
+using System.ComponentModel.DataAnnotations;
 
 namespace API_with_DOCKER.dtos.Order
 {
-    public record CreateOrder
+    public class CreateOrder
     {
+        [Range(1, int.MaxValue)]
+        public int CustomerId { get; set; }
+
         [Required]
-        List<OrderItem> items;
+        [MinLength(1)]
+        public List<CreateOrderItem> Items { get; set; } = new();
+
         [Required]
-        Customer Customer;
+        public string PricingType { get; set; } = "Normal";
     }
 }

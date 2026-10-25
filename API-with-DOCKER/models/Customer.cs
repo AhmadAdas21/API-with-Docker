@@ -1,10 +1,12 @@
-﻿namespace API_with_DOCKER.models
+﻿
+namespace API_with_DOCKER.models
 {
     public class Customer
     {
-        public int customerId { get; set; }
-        public string Name { get; set; }
-        Order Order { get; set; }
-        
+        public int Id { get; set; }
+
+        public string Name { get; set; } = string.Empty;
+
+        public List<Order> Orders { get; set; } = new();
     }
 }
