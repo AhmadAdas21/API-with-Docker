@@ -5,7 +5,7 @@ namespace API_with_DOCKER.services
 {
     public class OrderServices:IOrder
     {
-        public List<Order> GetAll
+        public List<Order> GetAll()
         {
             Order.AsNoTracking.Any().ToList();
         }
