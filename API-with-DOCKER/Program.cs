@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IProduct, ProductServices>();
+builder.Services.AddScoped<IProductServices, ProductServices>();
 // Pricing Strategies
 builder.Services.AddScoped<NormalPricingStrategy>();
 builder.Services.AddScoped<VipPricingStrategy>();

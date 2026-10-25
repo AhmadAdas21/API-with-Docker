@@ -12,9 +12,9 @@ namespace API_with_DOCKER.Controllers
     public class ProductController : ControllerBase
     {
 
-        private readonly IProduct _productService;
+        private readonly IProductServices _productService;
 
-        public ProductController(IProduct productService)
+        public ProductController(IProductServices productService)
         {
             _productService = productService;
         }
