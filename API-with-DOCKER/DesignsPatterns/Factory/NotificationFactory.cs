@@ -19,9 +19,9 @@ namespace API_with_DOCKER.DesignsPatterns.Factory
        
             return notificationType switch
             {
-                NotificationType.Email => new EmailNotification(),
-                NotificationType.Sms => new SmsNotification(),
-                NotificationType.Push => new PushNotification(),
+                NotificationType.Email => _emailNotification,
+                NotificationType.Sms => _smsNotification,
+                NotificationType.Push => _pushNotification,
                 _ => throw new ArgumentOutOfRangeException(nameof(notificationType),notificationType, "Unsupported notification type."), };
         }
     }
