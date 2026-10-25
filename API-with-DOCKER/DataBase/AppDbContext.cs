@@ -22,17 +22,17 @@ namespace API_with_DOCKER.DataBase
             modelBuilder.Entity<Order>()
                 .HasOne(order => order.Customer)
                 .WithMany(customer => customer.Orders)
-                .HasForeignKey(order => order.CustomerId);
+                .HasForeignKey(order => order.CustomerId).OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<OrderItem>()
                 .HasOne(item => item.Order)
                 .WithMany(order => order.Items)
-                .HasForeignKey(item => item.OrderId);
+                .HasForeignKey(item => item.OrderId).OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<OrderItem>()
                 .HasOne(item => item.Product)
                 .WithMany()
-                .HasForeignKey(item => item.ProductId);
+                .HasForeignKey(item => item.ProductId).OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Product>()
                 .Property(product => product.Price);
