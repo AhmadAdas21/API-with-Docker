@@ -23,7 +23,7 @@ namespace API_with_DOCKER.Controllers
         public async Task<IActionResult> GetProducts()
         {
             var Products = await _productService.GetAllProductsAsync();
-            return StatusCode(StatusCodes.Status200OK, Products);
+            return Ok(Products);
 
         }
         [HttpPost]
