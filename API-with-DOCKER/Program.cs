@@ -10,6 +10,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using API_with_DOCKER.DesignsPatterns.ChainOfResponsibility;
 using API_with_DOCKER.DesignsPatterns.Adapter;
 using API_with_DOCKER.ThirdPartyPayment;
+using API_with_DOCKER.DesignsPatterns.Results;
 var builder = WebApplication.CreateBuilder(args);
 
 // Register services
@@ -114,5 +115,27 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+app.MapGet("/api/products/{id:int}/result",
+    async (int id, ProductServices service) =>
+    {
+        var result = await service.GetProductByIdResultAsync(id);
+
+        return result.Status switch
+        {
+            ResultStatus.Success =>Results.Ok(result.Value),
+
+            ResultStatus.ValidationFailure => Results.BadRequest(result.Error),
+
+            ResultStatus.NotFound =>Results.NotFound(result.Error),
+
+            ResultStatus.Conflict =>Results.Conflict(result.Error),
+
+            ResultStatus.Failure =>Results.Problem(
+                    title: "Operation failed",statusCode: 500),
+
+            _ => Results.Problem()
+        };
+    });
 
 app.Run();

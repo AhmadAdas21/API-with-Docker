@@ -1,7 +1,10 @@
 ﻿using API_with_DOCKER.DataBase;
+using API_with_DOCKER.DesignsPatterns.Specification;
 using API_with_DOCKER.dtos.Product;
 using API_with_DOCKER.interfaces;
 using API_with_DOCKER.models;
+using API_with_DOCKER.DesignsPatterns.Specification;
+using API_with_DOCKER.DesignsPatterns.Results;
 using Microsoft.EntityFrameworkCore;
 
 namespace API_with_DOCKER.services
@@ -36,5 +39,39 @@ namespace API_with_DOCKER.services
 
             return product;
         }
+
+        public async Task<List<Product>> SearchProductsAsync(decimal minPrice, decimal maxPrice)
+        {
+            return await AppDbContext.Products
+                .AsNoTracking()
+                .Where(ProductSpecifications.Active())
+                .Where(ProductSpecifications.PriceInRange(minPrice, maxPrice))
+                .Where(ProductSpecifications.InStock())
+                .ToListAsync();
+        }
+
+        public async Task<Result<Product>> GetProductByIdResultAsync(int id)
+        {
+            if (id <= 0)
+            {
+                return Result<Product>.ValidationFailure(
+                    "Invalid product ID");
+            }
+
+            var product = await AppDbContext.Products
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (product == null)
+            {
+                return Result<Product>.NotFound(
+                    "Product not found");
+            }
+
+            return Result<Product>.Success(product);
+        }
+
+
     }
+
 }
