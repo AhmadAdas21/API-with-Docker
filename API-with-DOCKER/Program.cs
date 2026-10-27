@@ -5,6 +5,8 @@ using API_with_DOCKER.services;
 using API_with_DOCKER.DesignsPatterns.Pricing;
 using API_with_DOCKER.DesignsPatterns.Factory;
 using Microsoft.EntityFrameworkCore;
+using API_with_DOCKER.DesignsPatterns.Decorater;
+using Microsoft.Extensions.Caching.Distributed;
 
 var builder = WebApplication.CreateBuilder(args);
 
