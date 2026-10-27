@@ -16,7 +16,27 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Product and Order Services
-builder.Services.AddScoped<IProductServices, ProductServices>();
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration =builder.Configuration["Redis:ConnectionString"]?? throw new InvalidOperationException("Redis connection string is missing");
+
+    options.InstanceName = "APIWithDocker:";
+});
+
+builder.Services.AddScoped<ProductServices>();
+
+builder.Services.AddScoped<IProductServices>(sp =>
+{
+    var originalService =sp.GetRequiredService<ProductServices>();
+
+    var cache =sp.GetRequiredService<IDistributedCache>();
+
+    var logger =sp.GetRequiredService<ILogger<CachedProductService>>();
+
+    return new CachedProductService(originalService,cache,logger);
+});
+
 builder.Services.AddScoped<IOrderServices, OrderServices>();
 
 // Strategy Pattern

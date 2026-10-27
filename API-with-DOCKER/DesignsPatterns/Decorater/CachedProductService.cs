@@ -51,7 +51,10 @@ namespace API_with_DOCKER.DesignsPatterns.Decorater
 
         public async Task<Product> CreateProductAsync(AddProduct request)
         {
-            return await _inner.CreateProductAsync(request);
+            var product =await _inner.CreateProductAsync(request);
+            await _cache.RemoveAsync(CacheKey);
+            _logger.LogInformation("the cache removed");
+            return product;
         }
     }
 }
