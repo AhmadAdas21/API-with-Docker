@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using API_with_DOCKER.DesignsPatterns.Decorater;
 using Microsoft.Extensions.Caching.Distributed;
 using API_with_DOCKER.DesignsPatterns.ChainOfResponsibility;
+using API_with_DOCKER.DesignsPatterns.Adapter;
+using API_with_DOCKER.ThirdPartyPayment;
 var builder = WebApplication.CreateBuilder(args);
 
 // Register services
@@ -85,6 +87,8 @@ builder.Services.AddScoped<IOrderValidationHandler>(sp =>
 
     return customer;
 });
+builder.Services.AddScoped<FakePaymentPlatform>();
+builder.Services.AddScoped<IPaymentService, PaymentAdapter>();
 
 var app = builder.Build();
 
