@@ -53,5 +53,28 @@ namespace API_with_DOCKER.Controllers
             };
         }
 
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var result = await _productService.DeleteProductAsync(id);
+
+            return result.Status switch
+            {
+
+
+                ResultStatus.Success => NoContent(),
+
+
+
+                ResultStatus.ValidationFailure =>BadRequest(result.Error),
+
+                ResultStatus.NotFound =>NotFound(result.Error),
+
+                ResultStatus.Conflict =>Conflict(result.Error),
+
+                _ => StatusCode(500, "Operation failed")
+            };
+        }
+
     }
 }

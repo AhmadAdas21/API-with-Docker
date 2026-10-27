@@ -114,6 +114,26 @@ namespace API_with_DOCKER.DesignsPatterns.Decorater
             return result;
         }
 
+        public async Task<Result<bool>> DeleteProductAsync(int id)
+        {
+            var result = await _inner.DeleteProductAsync(id);
+
+            if (!result.IsSuccess)
+            { 
+            return result;
+            }
+            await _cache.RemoveAsync($"product:{id}");
+
+
+
+            await _cache.RemoveAsync(CacheKey);
+
+            _logger.LogInformation("Cache INVALIDATED after DELETE for product {ProductId}", id);
+
+            return result;
+        }
+
+
 
     }
 }

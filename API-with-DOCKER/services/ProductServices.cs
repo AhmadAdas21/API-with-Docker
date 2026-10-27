@@ -102,6 +102,35 @@ namespace API_with_DOCKER.services
             return Result<Product>.Success(product);
         }
 
+        public async Task<Result<bool>> DeleteProductAsync(int id)
+        {
+            if (id <= 0)
+            {
+                return Result<bool>.ValidationFailure( "Invalid product ID");
+            }
+
+            var product = await AppDbContext.Products.FindAsync(id);
+
+            if (product == null)
+            {
+                return Result<bool>.NotFound("Product not found");
+            }
+
+            bool hasOrders = await AppDbContext.OrderItems.AnyAsync(item => item.ProductId == id);
+
+            if (hasOrders)
+            {
+                return Result<bool>.Conflict("Cannot delete a product used in orders");
+            }
+
+            AppDbContext.Products.Remove(product);
+
+            await AppDbContext.SaveChangesAsync();
+
+            return Result<bool>.Success(true);
+        }
+
+
 
 
     }
