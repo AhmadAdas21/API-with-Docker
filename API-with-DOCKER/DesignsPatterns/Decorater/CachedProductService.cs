@@ -98,5 +98,22 @@ namespace API_with_DOCKER.DesignsPatterns.Decorater
             return result;
         }
 
+        public async Task<Result<Product>> UpdateProductAsync(int id, updateProduct request)
+        {
+            var result = await _inner.UpdateProductAsync(id, request);
+
+            if (!result.IsSuccess)
+            {
+                return result;
+            }
+            await _cache.RemoveAsync($"product:{id}");
+            await _cache.RemoveAsync(CacheKey);
+
+            _logger.LogInformation("Cache INVALIDATED for product {ProductId}", id);
+
+            return result;
+        }
+
+
     }
 }

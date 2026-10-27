@@ -1,9 +1,11 @@
 ﻿using API_with_DOCKER.DataBase;
+using API_with_DOCKER.DesignsPatterns.Results;
 using API_with_DOCKER.dtos.Product;
 using API_with_DOCKER.interfaces;
 using API_with_DOCKER.models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace API_with_DOCKER.Controllers
 {
@@ -36,5 +38,20 @@ namespace API_with_DOCKER.Controllers
                 return StatusCode(201, product);
             }
         }
+
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] updateProduct request)
+        {
+            var result = await _productService.UpdateProductAsync(id, request);
+
+            return result.Status switch
+            {
+                ResultStatus.Success => Ok(result.Value),
+                ResultStatus.ValidationFailure =>BadRequest(result.Error),
+                ResultStatus.NotFound =>NotFound(result.Error),
+                _ => StatusCode(500, "Operation failed")
+            };
+        }
+
     }
 }

@@ -8,5 +8,6 @@ namespace API_with_DOCKER.interfaces
         Task<List<Product>> GetAllProductsAsync();
         Task<Product> CreateProductAsync(AddProduct request);
         Task<Result<Product>> GetProductByIdResultAsync(int id);
+        Task<Result<Product>> UpdateProductAsync(int id, updateProduct request);
     }
 }
