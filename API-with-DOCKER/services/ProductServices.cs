@@ -26,7 +26,8 @@ namespace API_with_DOCKER.services
             {
                 Name = dto.Name,
                 Description = dto.Description,
-                Price = dto.Price
+                Price = dto.Price,
+                StockQuantity = dto.StockQuantity
             };
 
             AppDbContext.Products.Add(product);

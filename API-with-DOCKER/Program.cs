@@ -52,7 +52,7 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<EmailNotification>();
 builder.Services.AddScoped<SmsNotification>();
 builder.Services.AddScoped<PushNotification>();
-
+builder.Services.AddScoped<StockValidationHandler>();
 builder.Services.AddScoped<
     INotificationFactory,
     NotificationFactory>();
@@ -76,8 +76,12 @@ builder.Services.AddScoped<IOrderValidationHandler>(sp =>
 
     var product =
         sp.GetRequiredService<ProductValidationHandler>();
+    var stock=
+    sp.GetRequiredService<StockValidationHandler>();
 
     customer.SetNext(product);
+    product.SetNext(stock);
+
 
     return customer;
 });
