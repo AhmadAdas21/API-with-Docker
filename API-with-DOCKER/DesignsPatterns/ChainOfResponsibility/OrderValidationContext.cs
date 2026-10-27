@@ -3,7 +3,7 @@ using API_with_DOCKER.models;
 
 namespace API_with_DOCKER.DesignsPatterns.ChainOfResponsibility
 {
-    public class OrderValidationContext:IOrderValidationHandler
+    public class OrderValidationContext
     {
         public CreateOrder Request { get; }
 
