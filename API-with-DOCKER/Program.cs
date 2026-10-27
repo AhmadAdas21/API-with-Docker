@@ -7,7 +7,9 @@ using API_with_DOCKER.DesignsPatterns.Factory;
 using Microsoft.EntityFrameworkCore;
 using API_with_DOCKER.DesignsPatterns.Decorater;
 using Microsoft.Extensions.Caching.Distributed;
-
+using API_with_DOCKER.DesignsPatterns.ChainOfResponsibility;
+using API_with_DOCKER.DesignsPatterns.Adapter;
+using API_with_DOCKER.ThirdPartyPayment;
 var builder = WebApplication.CreateBuilder(args);
 
 // Register services
@@ -52,7 +54,7 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<EmailNotification>();
 builder.Services.AddScoped<SmsNotification>();
 builder.Services.AddScoped<PushNotification>();
-
+builder.Services.AddScoped<StockValidationHandler>();
 builder.Services.AddScoped<
     INotificationFactory,
     NotificationFactory>();
@@ -65,6 +67,28 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 builder.Services.AddHealthChecks();
+
+builder.Services.AddScoped<CustomerValidationHandler>();
+builder.Services.AddScoped<ProductValidationHandler>();
+
+builder.Services.AddScoped<IOrderValidationHandler>(sp =>
+{
+    var customer =
+        sp.GetRequiredService<CustomerValidationHandler>();
+
+    var product =
+        sp.GetRequiredService<ProductValidationHandler>();
+    var stock=
+    sp.GetRequiredService<StockValidationHandler>();
+
+    customer.SetNext(product);
+    product.SetNext(stock);
+
+
+    return customer;
+});
+builder.Services.AddScoped<FakePaymentPlatform>();
+builder.Services.AddScoped<IPaymentService, PaymentAdapter>();
 
 var app = builder.Build();
 

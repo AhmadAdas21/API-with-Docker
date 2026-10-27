@@ -13,5 +13,8 @@ namespace API_with_DOCKER.dtos.Product
         [Required]
         [Range(1, 10000000.00)]
         public decimal Price { get; init; }
+        [Required]
+        [Range(0, int.MaxValue)]
+        public int StockQuantity { get; init; }
     }
 }
