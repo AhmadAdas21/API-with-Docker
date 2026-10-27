@@ -5,18 +5,19 @@ using API_with_DOCKER.dtos.Order;
 using API_with_DOCKER.interfaces;
 using API_with_DOCKER.models;
 using Microsoft.EntityFrameworkCore;
-
+using API_with_DOCKER.DesignsPatterns.ChainOfResponsibility;
 namespace API_with_DOCKER.services
 {
     public class OrderServices : IOrderServices
     {
         private readonly AppDbContext _context;
         private readonly IPricingStrategyResolver _pricingResolver;
-
-        public OrderServices(AppDbContext context, IPricingStrategyResolver pricingResolver)
+        private readonly IOrderValidationHandler _validationPipeline;
+        public OrderServices(AppDbContext context, IPricingStrategyResolver pricingResolver, IOrderValidationHandler validationPipeline)
         {
             _context = context;
             _pricingResolver = pricingResolver;
+            _validationPipeline = validationPipeline;
         }
 
         public async Task<List<Order>> GetAllOrdersAsync(
@@ -29,43 +30,13 @@ namespace API_with_DOCKER.services
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            if (request.CustomerId <= 0)
-            {
-                throw new ArgumentException("Invalid customer ID.");
-            }
+            var validationContext = new OrderValidationContext(request);
 
-            if (request.Items == null || request.Items.Count == 0)
-            {
-                throw new ArgumentException( "Order must contain at least one item.");
-            }
+            await _validationPipeline.ValidateAsync( validationContext,cancellationToken);
 
-            if (request.Items.Any(item =>
-                item == null ||item.ProductId <= 0 || item.Quantity <= 0))
-            {
-                throw new ArgumentException( "Invalid product ID or quantity.");
-            }
+            var products = validationContext.Products;
 
-            bool customerExists = await _context.Customers.AnyAsync(customer => customer.Id == request.CustomerId,cancellationToken);
-
-            if (!customerExists)
-            {
-                throw new KeyNotFoundException("Customer not found.");
-            }
-
-            var productIds = request.Items.Select(item => item.ProductId).ToList();
-
-            if (productIds.Count != productIds.Distinct().Count())
-            {
-                throw new ArgumentException("Duplicate products are not allowed.");
-            }
-
-            var products = await _context.Products.AsNoTracking().Where(product => productIds.Contains(product.Id))
-                .ToDictionaryAsync(product => product.Id,cancellationToken);
-
-            if (products.Count != productIds.Count)
-            {
-                throw new KeyNotFoundException("One or more products were not found.");
-            }
+           
 
             List<OrderItem> orderItems = new();
 

@@ -7,7 +7,7 @@ using API_with_DOCKER.DesignsPatterns.Factory;
 using Microsoft.EntityFrameworkCore;
 using API_with_DOCKER.DesignsPatterns.Decorater;
 using Microsoft.Extensions.Caching.Distributed;
-
+using API_with_DOCKER.DesignsPatterns.ChainOfResponsibility;
 var builder = WebApplication.CreateBuilder(args);
 
 // Register services
@@ -65,6 +65,22 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 builder.Services.AddHealthChecks();
+
+builder.Services.AddScoped<CustomerValidationHandler>();
+builder.Services.AddScoped<ProductValidationHandler>();
+
+builder.Services.AddScoped<IOrderValidationHandler>(sp =>
+{
+    var customer =
+        sp.GetRequiredService<CustomerValidationHandler>();
+
+    var product =
+        sp.GetRequiredService<ProductValidationHandler>();
+
+    customer.SetNext(product);
+
+    return customer;
+});
 
 var app = builder.Build();
 
