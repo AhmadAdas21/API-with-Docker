@@ -4,7 +4,7 @@ using API_with_DOCKER.interfaces;
 using API_with_DOCKER.models;
 using Microsoft.Extensions.Caching.Distributed;
 using API_with_DOCKER.DesignsPatterns.Results;
-
+using StackExchange.Redis;
 namespace API_with_DOCKER.DesignsPatterns.Decorater
 {
     public class CachedProductService : IProductServices
@@ -25,7 +25,7 @@ namespace API_with_DOCKER.DesignsPatterns.Decorater
 
         public async Task<List<Product>> GetAllProductsAsync()
         {
-            var cachedData = await _cache.GetStringAsync(CacheKey);
+            var cachedData = await SafeGetCacheAsync(CacheKey);
 
             if (cachedData != null)
             {
@@ -41,11 +41,7 @@ namespace API_with_DOCKER.DesignsPatterns.Decorater
 
             var products = await _inner.GetAllProductsAsync();
 
-            await _cache.SetStringAsync(CacheKey, JsonSerializer.Serialize(products),
-                new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow =TimeSpan.FromMinutes(10)
-                });
+            await SafeSetCacheAsync(CacheKey, JsonSerializer.Serialize(products));
 
             return products;
         }
@@ -53,7 +49,8 @@ namespace API_with_DOCKER.DesignsPatterns.Decorater
         public async Task<Product> CreateProductAsync(AddProduct request)
         {
             var product =await _inner.CreateProductAsync(request);
-            await _cache.RemoveAsync(CacheKey);
+            await SafeRemoveCacheAsync("product");
+            await SafeRemoveCacheAsync(CacheKey);
             _logger.LogInformation("the cache removed");
             return product;
         }
@@ -67,7 +64,7 @@ namespace API_with_DOCKER.DesignsPatterns.Decorater
 
             string cacheKey = $"product:{id}";
 
-            var cachedData = await _cache.GetStringAsync(cacheKey);
+            var cachedData = await SafeGetCacheAsync(cacheKey);
 
             if (cachedData != null)
             {
@@ -106,8 +103,8 @@ namespace API_with_DOCKER.DesignsPatterns.Decorater
             {
                 return result;
             }
-            await _cache.RemoveAsync($"product:{id}");
-            await _cache.RemoveAsync(CacheKey);
+            await SafeRemoveCacheAsync($"product:{id}");
+            await SafeRemoveCacheAsync(CacheKey);
 
             _logger.LogInformation("Cache INVALIDATED for product {ProductId}", id);
 
@@ -122,17 +119,58 @@ namespace API_with_DOCKER.DesignsPatterns.Decorater
             { 
             return result;
             }
-            await _cache.RemoveAsync($"product:{id}");
+            await SafeRemoveCacheAsync($"product:{id}");
 
 
-
-            await _cache.RemoveAsync(CacheKey);
+            await SafeRemoveCacheAsync(CacheKey);
 
             _logger.LogInformation("Cache INVALIDATED after DELETE for product {ProductId}", id);
 
             return result;
         }
 
+
+        private async Task<string?> SafeGetCacheAsync(string key)
+        {
+            try
+            {
+                return await _cache.GetStringAsync(key);
+            }
+            catch (Exception ex) when (ex is RedisException or TimeoutException)
+            {
+                _logger.LogWarning(ex,"Redis unavailable during GET for {CacheKey}. Using database.",key);
+
+                return null;
+            }
+        }
+
+        private async Task SafeSetCacheAsync(string key, string value)
+        {
+            try
+            {
+                await _cache.SetStringAsync(key,value,
+                    new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow =TimeSpan.FromMinutes(10)
+                    });
+            }
+            catch (Exception ex) when (ex is RedisException or TimeoutException)
+            {
+                _logger.LogWarning(ex,"Redis unavailable during SET for {CacheKey}.",key);
+            }
+        }
+
+        private async Task SafeRemoveCacheAsync(string key)
+        {
+            try
+            {
+                await _cache.RemoveAsync(key);
+            }
+            catch (Exception ex) when (ex is RedisException or TimeoutException)
+            {
+                _logger.LogWarning( ex,"Redis unavailable during INVALIDATION for {CacheKey}.", key);
+            }
+        }
 
 
     }
