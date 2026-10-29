@@ -116,8 +116,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-app.MapGet("/api/products/{id:int}/result",
-    async (int id, ProductServices service) =>
+app.MapGet("/api/products/{id:int}",async (int id, IProductServices service) =>
     {
         var result = await service.GetProductByIdResultAsync(id);
 
@@ -131,8 +130,7 @@ app.MapGet("/api/products/{id:int}/result",
 
             ResultStatus.Conflict =>Results.Conflict(result.Error),
 
-            ResultStatus.Failure =>Results.Problem(
-                    title: "Operation failed",statusCode: 500),
+            ResultStatus.Failure =>Results.Problem( title: "Operation failed",statusCode: 500),
 
             _ => Results.Problem()
         };

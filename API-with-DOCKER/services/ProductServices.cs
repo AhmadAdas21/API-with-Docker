@@ -71,6 +71,67 @@ namespace API_with_DOCKER.services
             return Result<Product>.Success(product);
         }
 
+        public async Task<Result<Product>> UpdateProductAsync(int id, updateProduct request)
+        {
+            if (id <= 0 ||(request.name == null &&request.description == null && request.price == null) || request.price is <= 0)
+            {
+                return Result<Product>.ValidationFailure("invalid update for product");
+            }
+
+            var product = await AppDbContext.Products.FindAsync(id);
+
+            if (product == null)
+            {
+                return Result<Product>.NotFound("product" +
+                    ".30 not found");
+            }
+
+            if (request.name != null)
+            {
+                product.Name = request.name;
+            }
+            if (request.description != null)
+            {
+                product.Description = request.description;
+            }
+            if (request.price.HasValue)
+            {
+                product.Price = request.price.Value;
+            }
+            await AppDbContext.SaveChangesAsync();
+            return Result<Product>.Success(product);
+        }
+
+        public async Task<Result<bool>> DeleteProductAsync(int id)
+        {
+            if (id <= 0)
+            {
+                return Result<bool>.ValidationFailure( "Invalid product ID");
+            }
+
+            var product = await AppDbContext.Products.FindAsync(id);
+
+            if (product == null)
+            {
+                return Result<bool>.NotFound("Product not found");
+            }
+
+            bool hasOrders = await AppDbContext.OrderItems.AnyAsync(item => item.ProductId == id);
+
+            if (hasOrders)
+            {
+                return Result<bool>.Conflict("Cannot delete a product used in orders");
+            }
+
+            AppDbContext.Products.Remove(product);
+
+            await AppDbContext.SaveChangesAsync();
+
+            return Result<bool>.Success(true);
+        }
+
+
+
 
     }
 
